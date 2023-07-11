@@ -92,6 +92,19 @@
       }
   };
 
+  // function loadingApp(listName) {
+  //   // объявляем переменную со значением данных из localStorage
+
+  //   // если значение storage не ноль, то передаем его значение в переменную saveCase
+  //   if(saveCase) {
+  //     saveCase.forEach((obj) => {
+  //       todoList.append(createTodoItem(obj.name, obj.done, obj.id).item)
+  //     });
+  //     return;
+  //   };
+  //    // загружаем данные из localStorage в контейнер
+  // };
+
   function createTodoApp(container, title, listName) {
     let todoAppTitle = createAppTitle(title); // возвращают DOM элемент который можно разместить
     let todoItemForm = createTodoItemForm(); // вернет объект в котором помимо прочего есть формы
@@ -100,6 +113,13 @@
     container.append(todoAppTitle);
     container.append(todoItemForm.form); // поэтому сначала берем его форму
     container.append(todoList);
+
+    saveCase = JSON.parse(localStorage.getItem(listName)); // получаем значение из localStorage
+    if(saveCase) {
+      saveCase.forEach((obj) => {
+        todoList.append(createTodoItem(obj.name, obj.done, obj.id).item)
+      });
+    };
 
     // создаем событие на ввод текста в поле и разблокировку кнопки Добавить событие
     todoItemForm.input.addEventListener('input', function() {
@@ -166,18 +186,6 @@
       });
     };
 
-    function loadingApp(listName) {
-      // объявляем переменную со значением данных из localStorage
-      let saveCase = JSON.parse(localStorage.getItem(listName))
-
-      // если значение storage не ноль, то передаем его значение в переменную saveCase
-      if(saveCase) {
-        console.log(saveCase[0]);
-        createTodoList();
-        saveCase.forEach((obj) => createTodoItem(obj.name, obj.done, obj.id));
-      }
-    }
-
   // использовать данный код, в случае, если мы хотим все это увидеть на одной странице
   // document.addEventListener('DOMContentLoaded', function() {
   //     createTodoApp(document.getElementById('my-todos'), 'Мои дела');
@@ -185,7 +193,7 @@
   //     createTodoApp(document.getElementById('dad-todos'), 'Мои поручения');
   // });
 
-  window.loadingApp = loadingApp;
+  // window.loadingApp = loadingApp;
   window.createTodoApp = createTodoApp; // создаем метод для того, чтобы использовать функцию с любого скрипта
 
 })()
