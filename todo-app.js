@@ -109,6 +109,7 @@
     let todoAppTitle = createAppTitle(title); // возвращают DOM элемент который можно разместить
     let todoItemForm = createTodoItemForm(); // вернет объект в котором помимо прочего есть формы
     let todoList = createTodoList(); //  возвращают DOM элемент который можно разместить
+    let todoItem;
 
     container.append(todoAppTitle);
     container.append(todoItemForm.form); // поэтому сначала берем его форму
@@ -117,10 +118,41 @@
     saveCase = JSON.parse(localStorage.getItem(listName)); // получаем значение из localStorage
     if(saveCase) {
       saveCase.forEach((obj) => {
-        todoList.append(createTodoItem(obj.name, obj.done, obj.id).item)
+        todoItem = createTodoItem(obj.name, obj.done, obj.id).item
+        todoList.append(todoItem);
       });
     };
 
+      // добавляем обработчики на кнопки
+      todoItem.doneButton.addEventListener('click', function() {
+        todoItem.item.classList.toggle('list-group-item-success'); // зеленая подсветка кнопки при нажатии вкл/выкл
+        // нажатие создает переменную с айди кнопки на которую нажали
+        const id = Number(todoItem.doneButton.getAttribute('id'));
+        // далее находим данный элемент в массиве saveCase и изменяем значение done на true или false
+        saveCase.forEach(function (i) {
+          if (i.id === id) {
+            i.done =!i.done;
+          }
+        });
+        // перезаписываем значение в localStorage
+        localStorage.setItem(listName, JSON.stringify(saveCase));
+      });
+
+      todoItem.deleteButton.addEventListener('click', function() {
+        // нажатие создает переменную с айди кнопки на которую нажали
+        const id = Number(todoItem.deleteButton.getAttribute('id'));
+        if (confirm('Вы уверены?')) { // если ответ да то удаляем элемент
+          todoItem.item.remove();
+          // находим данный элемент в массиве saveCase и удаляем его
+          saveCase.forEach(function (i) {
+            if (i.id === id) {
+              saveCase.splice(saveCase.indexOf(i), 1)
+            }
+          });
+        }
+        // перезаписываем значение в localStorage
+        localStorage.setItem(listName, JSON.stringify(saveCase));
+      });
     // создаем событие на ввод текста в поле и разблокировку кнопки Добавить событие
     todoItemForm.input.addEventListener('input', function() {
       // если введен текст, то удаляем атрибут disabled
@@ -147,38 +179,7 @@
       if (!todoItemForm.input.value) {
           return;
         }
-        let todoItem = createTodoItem(todoItemForm.input.value);
-        // добавляем обработчики на кнопки
-        todoItem.doneButton.addEventListener('click', function() {
-          todoItem.item.classList.toggle('list-group-item-success'); // зеленая подсветка кнопки при нажатии вкл/выкл
-          // нажатие создает переменную с айди кнопки на которую нажали
-          const id = Number(todoItem.doneButton.getAttribute('id'));
-          // далее находим данный элемент в массиве saveCase и изменяем значение done на true или false
-          saveCase.forEach(function (i) {
-            if (i.id === id) {
-              i.done =!i.done;
-            }
-          });
-          // перезаписываем значение в localStorage
-          localStorage.setItem(listName, JSON.stringify(saveCase));
-        });
-
-        todoItem.deleteButton.addEventListener('click', function() {
-          // нажатие создает переменную с айди кнопки на которую нажали
-          const id = Number(todoItem.deleteButton.getAttribute('id'));
-          if (confirm('Вы уверены?')) { // если ответ да то удаляем элемент
-            todoItem.item.remove();
-            // находим данный элемент в массиве saveCase и удаляем его
-            saveCase.forEach(function (i) {
-              if (i.id === id) {
-                saveCase.splice(saveCase.indexOf(i), 1)
-              }
-            });
-          }
-          // перезаписываем значение в localStorage
-          localStorage.setItem(listName, JSON.stringify(saveCase));
-        });
-
+        todoItem = createTodoItem(todoItemForm.input.value);
         // создаем и добавляем в список новое дело с названием из поля для ввода
         todoList.append(todoItem.item);
         // обнуляем значение в поле ввода
